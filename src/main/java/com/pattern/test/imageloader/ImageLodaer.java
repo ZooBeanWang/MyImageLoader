@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+import com.pattern.test.ImageCache.IImageCache;
+import com.pattern.test.ImageCache.MemoryCache;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
@@ -14,20 +17,43 @@ import java.util.concurrent.Executors;
  */
 public class ImageLodaer {
     //图片缓存
-    ImageCache mImageCache = new ImageCache();
+    IImageCache mImageCache = new MemoryCache();
     //线程池，线程数量为CPU数量
     ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public ImageLodaer() {
+
+    /**
+     * 设置要使用得缓存类型
+     *
+     * @param imagCache
+     */
+    public void setImageCache(IImageCache imagCache) {
+        mImageCache = imagCache;
+
     }
 
-
-    public void displayImage(final String url, final ImageView imageView) {
+    /**
+     * 展示图片
+     *
+     * @param url
+     * @param imageView
+     */
+    public void displayImage(String url, ImageView imageView) {
         Bitmap bitmap = mImageCache.get(url);
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
+            return;
         }
-        imageView.setTag(url);
+        submitLoadRequest(url, imageView);
+    }
+
+    /**
+     * 从网络获取图片
+     *
+     * @param url
+     * @param imageView
+     */
+    private void submitLoadRequest(final String url, final ImageView imageView) {
         imageView.setTag(url);
         mExecutorService.submit(new Runnable() {
             @Override
@@ -42,7 +68,6 @@ public class ImageLodaer {
                 mImageCache.put(url, bitmap);
             }
         });
-
     }
 
     private Bitmap downloadImage(String imageUrl) {

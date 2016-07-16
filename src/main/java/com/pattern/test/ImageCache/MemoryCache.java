@@ -1,4 +1,4 @@
-package com.pattern.test.imageloader;
+package com.pattern.test.ImageCache;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;
@@ -6,10 +6,10 @@ import android.util.LruCache;
 /**
  * Created by frog on 7/16/16.
  */
-public class ImageCache {
+public class MemoryCache implements IImageCache {
     LruCache<String, Bitmap> mImageCache;
 
-    public ImageCache(LruCache<String, Bitmap> mImageCache) {
+    public MemoryCache() {
         initImageCache();
     }
 
@@ -27,10 +27,12 @@ public class ImageCache {
         };
     }
 
+    @Override
     public Bitmap get(String url) {
         return mImageCache.get(url);
     }
 
+    @Override
     public void put(String url, Bitmap bitmap) {
         mImageCache.put(url, bitmap);
     }
