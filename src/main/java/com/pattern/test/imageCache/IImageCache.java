@@ -1,4 +1,4 @@
-package com.pattern.test.ImageCache;
+package com.pattern.test.imageCache;
 
 import android.graphics.Bitmap;
 
@@ -8,5 +8,5 @@ import android.graphics.Bitmap;
 public interface IImageCache {
     void put(String url, Bitmap bitmap);
 
-    Bitmap get(String url);
+    Bitmap get(String url, int reqWidth, int reqHeight);
 }

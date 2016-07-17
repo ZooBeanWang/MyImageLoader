@@ -1,11 +1,13 @@
 package com.pattern.test.imageloader;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.widget.ImageView;
 
-import com.pattern.test.ImageCache.IImageCache;
-import com.pattern.test.ImageCache.MemoryCache;
+import com.pattern.test.imageCache.IImageCache;
+import com.pattern.test.imageCache.MemoryCache;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -21,15 +23,22 @@ public class ImageLodaer {
     //线程池，线程数量为CPU数量
     ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
+    private static final String TAG = ImageLodaer.class.getSimpleName();
 
     /**
-     * 设置要使用得缓存类型
-     *
-     * @param imagCache
+     * @param context
+     * @param imageCache 可以为null 默认MemoryCache
      */
-    public void setImageCache(IImageCache imagCache) {
-        mImageCache = imagCache;
+    public ImageLodaer(Context context, IImageCache imageCache) {
+        if (imageCache != null) {
+            mImageCache = imageCache;
+        }
 
+    }
+
+
+    public void displayImage(String url, ImageView imageView) {
+        displayImage(url, imageView, 0, 0);
     }
 
     /**
@@ -38,8 +47,11 @@ public class ImageLodaer {
      * @param url
      * @param imageView
      */
-    public void displayImage(String url, ImageView imageView) {
-        Bitmap bitmap = mImageCache.get(url);
+    public void displayImage(String url, ImageView imageView, int reqWidth, int reqHeight) {
+        if (TextUtils.isEmpty(url)) {
+            return;
+        }
+        Bitmap bitmap = mImageCache.get(url, reqWidth, reqHeight);
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
             return;
@@ -83,5 +95,6 @@ public class ImageLodaer {
         return bitmap;
 
     }
+
 
 }
